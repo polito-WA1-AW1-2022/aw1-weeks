@@ -41,6 +41,25 @@ function ExamList () {
                 return e;
         return undefined;
     }
+
+    this.filter = (callback) => {
+        for (const e of this.list)
+            if (callback(e))
+                return e;
+        return undefined;        
+    }
+
+    this.filterFunctional = (callback) => this.list.filter(callback);
+
+    this.increaseVote = () => {
+        return this.list.map( 
+            x => { 
+                const new_x = Object.assign({}, x, {voto: x.voto+1})
+                return new_x;
+            } 
+        );
+    }
+    
 }
 
 const wa1 = new Exam('01abc', 'WA1', 6, 30, true, dayjs('2022-03-04'));
@@ -55,5 +74,12 @@ console.log( exams.average() );
 
 const e = exams.find("01abc");
 console.log(e.str());
+
+const e2 = exams.filterFunctional( e => (e.code == '01abc') );
+console.log(e2[0].str());
+
+const list2 = exams.increaseVote();
+console.log(list2);
+
 
 //console.log(esame);
