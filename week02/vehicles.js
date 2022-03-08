@@ -17,5 +17,6 @@ const vehicles = [
     .filter(v => v.type === 'suv')
     .map(v => v.price)
     .reduce( (sum, price, i, array) => sum + price / array.length, 0);
+    //la i anche se inutilizzata è fondamentale
   
   console.log(averageSUVPrice); // 33399
