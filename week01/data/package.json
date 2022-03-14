@@ -1,7 +1,6 @@
 {
   "name": "data",
   "version": "1.0.1",
-  "description": "",
   "main": "test_date.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -10,5 +9,6 @@
   "license": "ISC",
   "dependencies": {
     "dayjs": "^1.10.8"
-  }
+  },
+  "description": ""
 }
