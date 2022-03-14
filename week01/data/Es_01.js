@@ -140,5 +140,5 @@ fl.PrintList();
 fl.resetWatchedFilms();
 fl.PrintList();
 
-
+//Funzione getRated
 fl.getRated();
