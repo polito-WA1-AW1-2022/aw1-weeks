@@ -20,7 +20,7 @@ async function printCount() {
                 if(err)
                      reject(err);
                 else {
-                    console.log(rows[0].tot);
+                    //console.log(rows[0].tot);
                     resolve(rows[0].tot);
                 }
             }) ;            
@@ -30,9 +30,10 @@ async function printCount() {
 async function main() {
     for(let i=0; i<100; i++) {
         await insertOne();
-        await printCount();
+        let tot = await printCount();
+        console.log(tot);
     }
-    db.close();
+    return 'Tutto ok';
 }
 
-main();
+main().then( (x)=>{db.close(); console.log(x)} )
