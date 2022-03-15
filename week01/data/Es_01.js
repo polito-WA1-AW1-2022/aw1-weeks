@@ -127,8 +127,8 @@ fl.addFilm2List(f1);
 //Confronto tra lista prima e dopo sort
 
 fl.PrintList();
-//fl.sortByDate();
-fl.sortId();
+fl.sortByDate();
+//fl.sortId();
 fl.PrintList();
 
 //Delete a film con index
