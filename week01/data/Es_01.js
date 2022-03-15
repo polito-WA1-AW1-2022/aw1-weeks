@@ -55,7 +55,7 @@ function FilmLibrary(){
                            };
 
     this.sortId = () => {
-                            this.list.sort( (x,y) => {    return x.id-y.id    } );
+                            this.list.sort( (x,y) => x.id-y.id);
                         };
     
     this.sortByDate = () => {
@@ -92,9 +92,7 @@ function FilmLibrary(){
                                     };
 
     this.resetWatchedFilms = () => {
-                                        this.list.forEach(x => {
-                                                                    x.resetData();
-                                                                }); 
+                                        this.list.forEach(x => x.resetData()); 
                                     };
 
     this.getRated = () => {
@@ -129,7 +127,8 @@ fl.addFilm2List(f1);
 //Confronto tra lista prima e dopo sort
 
 fl.PrintList();
-fl.sortByDate();
+//fl.sortByDate();
+fl.sortId();
 fl.PrintList();
 
 //Delete a film con index
