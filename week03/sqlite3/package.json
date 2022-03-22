@@ -1,0 +1,14 @@
+{
+  "name": "sqlite3",
+  "version": "1.0.0",
+  "main": "queries.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "sqlite3": "^5.0.2"
+  }
+}

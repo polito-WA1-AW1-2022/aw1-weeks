@@ -1,7 +1,7 @@
 'use strict';
 
 const sqlite = require('sqlite3');
-const db = new sqlite.Database('data.sqlite',
+const db = new sqlite.Database('data_empty.sqlite',
     (err) => { if (err) throw err; });
 
 async function insertOne() {
