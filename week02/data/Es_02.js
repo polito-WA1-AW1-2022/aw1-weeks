@@ -282,7 +282,7 @@ async function waitFilmWithTitle() {
                 listtemp.push(row);
             }
 
-            console.log("***Dati Film con titolo=\""+ title +"\"***");
+            console.log("***Dati Film con titolo = \""+ title +"\" ***");
             listtemp.forEach(x => console.log(x));
             console.log("****************\n");
 
