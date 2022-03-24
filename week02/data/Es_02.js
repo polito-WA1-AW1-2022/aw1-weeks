@@ -5,6 +5,13 @@ const dayjs = require('dayjs');
 var localizedFormat = require('dayjs/plugin/localizedFormat');
 dayjs.extend(localizedFormat);
 
+//Apertura DB
+const sqlite = require('sqlite3');
+const db = new sqlite.Database('films.db', (err) => { if (err) throw err; });
+
+const data_per_film_precedenti = dayjs().format('2022-03-16','YYYY-MM-DD');
+const rating_film_migliori = 2;
+const titolo_da_stampare = "Star Wars";
 
 function Film(id, title, favorite, data, rating){
     
@@ -47,13 +54,28 @@ function Film(id, title, favorite, data, rating){
 
 function FilmLibrary(){
     this.list = [];
-    this.addFilm2List = (Film) => {this.list.push(Film)};
+
+    this.addFilm2List = (film) => {
+        if(!this.list.some(f => f.id == film.id))
+            this.list.push(film);
+        else
+            throw new Error('Duplicate id');
+    };
     
     this.PrintList = () => {
                                 this.list.forEach(x => {x.PrintFilm();})
                                 console.log();
                            };
+    
+    //Funzione di stampa formattata degli oggetti nel db
+    this.PrintDBList = (list, titolostampa) =>{
 
+        console.log("***"+ titolostampa +"***");
+        list.forEach(x => console.log(x));
+        console.log("****************\n");
+    
+    };
+    
     this.sortId = () => {
                             this.list.sort( (x,y) => x.id-y.id);
                         };
@@ -104,206 +126,200 @@ function FilmLibrary(){
 
     this.addFilmList = (x) => {this.list = x};
 
-    this.getAll = () =>{return this.list}                      
+    this.getAll = () =>{return this.list};
+    
+    //Lista FilmDB con Await e Promise
+    this.waitAllFilmsDB = async function() {
+        return new Promise((resolve, reject) => {
+            let sqlquery = "SELECT * FROM films";
+            db.all(sqlquery, (err,rows)=>{ 
+                
+                if(err) 
+                    reject("Errore Lettura AllFilms");
+                else{
 
-}
-
-// Creo Lista aggiungendo i vari film
-const fl = new FilmLibrary();
-
-let f1 = new Film(4, "Matrix", false, undefined, undefined);
-fl.addFilm2List(f1);
-
-f1 = new Film(5, "Shrek", false, dayjs('2022-03-21'), 3);
-fl.addFilm2List(f1);
-
-f1 = new Film(1, "Pulp Fiction", true, dayjs('2022-03-10'), 5);
-fl.addFilm2List(f1);
-
-f1 = new Film(2, "21 Grams", true, dayjs('2022-03-17'), 4);
-fl.addFilm2List(f1);
-
-f1 = new Film(3, "Star Wars", false, undefined, undefined);
-fl.addFilm2List(f1);
-
-//Confronto tra lista prima e dopo sort
-/*
-
-fl.PrintList();
-fl.sortByDate();
-//fl.sortId();
-fl.PrintList();
-
-//Delete a film con index
-fl.deleteFilm('4');
-fl.PrintList();
-
-//Reset Watched Films
-fl.resetWatchedFilms();
-fl.PrintList();
-
-//Funzione getratingd
-fl.getratingd();
-
-*/
-
-///WEEK02_01
-
-//Apertura DB
-const sqlite = require('sqlite3');
-const db = new sqlite.Database('films.db', (err) => { if (err) throw err; });
-//Stampa Film con Await e Promise
-async function waitAllFilms() {
-    return new Promise((resolve, reject) => {
-        let sqlquery = "SELECT * FROM films";
-        db.all(sqlquery, (err,rows)=>{ 
-            
-            if(err) 
-                reject("Errore Lettura AllFilms");
-            else{
-                const listtemp = [];
-                for (let row of rows) {
-                    
-                    listtemp.push(row);
+                    resolve(rows);
                 }
-                console.log("***Lista Film***");
-                listtemp.forEach(x => console.log(x));
-                console.log("****************\n");
-
-                resolve();
-            }
-        });
-
-    });
-
-};
-//Stampa Film prefertiti con await e promise
-async function waitFavoriteFilms() {
-    return new Promise((resolve, reject) => {
-        const sqlquery = "SELECT * FROM films WHERE favorite=?";
-        const favorite = 1;
-        db.all(sqlquery,[favorite], (err,rows)=>{
-            
-            if(err) reject("Errore Lettura Favorite");
-
-            const listtemp = [];
-            for (let row of rows) {
-                
-                listtemp.push(row);
-            }
-
-            console.log("***Lista Film Preferiti***");
-            listtemp.forEach(x => console.log(x));
-            console.log("****************\n");
-
-            resolve();
-        });
-
-    });
-};
-//Stampa Film visti oggi con await e promise
-async function waitWatchToday(){
-    return new Promise((resolve, reject) =>{
-        const sqlquery = "SELECT * FROM films WHERE watchdate=?";
-        const watchdate = dayjs().format('YYYY-MM-DD');
-        
-        db.all(sqlquery,[watchdate], (err,rows) => {
-            if(err) reject("Errore Lettura WatchToday");
-
-            const listtemp = [];
-            for (let row of rows) {
-                
-                listtemp.push(row);
-            }
-
-            console.log("***Lista Film visti oggi***");
-            listtemp.forEach(x => console.log(x));
-            console.log("****************\n");
-
-            resolve();
             });
-    });
-};
-//Stampa Film prima di data x
-async function waitFilmBeforeData() {
-    return new Promise((resolve, reject) => {
-        const sqlquery = "SELECT * FROM films WHERE watchdate<?";
-        const watchdate = dayjs().format('2022-03-16','YYYY-MM-DD');
 
-        db.all(sqlquery, [watchdate], (err,rows) => {
-            if(err) reject("Errore Lettura WatchdateBefore");
-
-            const listtemp = [];
-            for(let row of rows){
-                listtemp.push(row);
-            }
-
-            console.log("***Lista Film Prima del "+ watchdate +"***");
-            listtemp.forEach(x => console.log(x));
-            console.log("****************\n");
-
-            resolve();
         });
-    });
-};
-//Stampa Film rating maggiore di x
-async function waitFilmRatingBetterThen() {
-    return new Promise((resolve, reject) => {
-        const sqlquery = "SELECT * FROM films WHERE rating>?";
-        const rating = 2;
 
-        db.all(sqlquery, [rating], (err,rows) => {
-            if(err) reject("Errore Lettura FilmRatingBetterThan");
+    };
 
-            const listtemp = [];
-            for(let row of rows){
-                listtemp.push(row);
-            }
+    
+    //Lista FilmDB prefertiti con await e promise
+    this.waitFavoriteFilms = async function() {
+        return new Promise((resolve, reject) => {
+            const sqlquery = "SELECT * FROM films WHERE favorite=?";
+            const favorite = 1;
+            db.all(sqlquery,[favorite], (err,rows)=>{
+                
+                if(err) reject("Errore Lettura Favorite");
 
-            console.log("***Lista Film con Rate maggiore di "+ rating +"***");
-            listtemp.forEach(x => console.log(x));
-            console.log("****************\n");
+                resolve(rows);
+            });
 
-            resolve();
         });
-    });
-};
-//Stampa Film con titolo x
-async function waitFilmWithTitle() {
-    return new Promise((resolve, reject) => {
-        const sqlquery = "SELECT * FROM films WHERE title=?";
-        const title = "Star Wars";
+    };
 
-        db.all(sqlquery, [title], (err,rows) => {
-            if(err) reject("Errore Lettura FilmWithTitle");
+    
+    //Lista FilmDB visti oggi con await e promise
+    this.waitWatchToday = async function(){
+        return new Promise((resolve, reject) =>{
+            const sqlquery = "SELECT * FROM films WHERE watchdate=?";
+            const watchdate = dayjs().format('YYYY-MM-DD');
+            
+            db.all(sqlquery,[watchdate], (err,rows) => {
+                if(err) reject("Errore Lettura WatchToday");
 
-            const listtemp = [];
-            for(let row of rows){
-                listtemp.push(row);
-            }
-
-            console.log("***Dati Film con titolo = \""+ title +"\" ***");
-            listtemp.forEach(x => console.log(x));
-            console.log("****************\n");
-
-            resolve();
+                resolve(rows);
+                });
         });
-    });
+    };
+
+    //Lista FilmDB prima di data x
+    this.waitFilmBeforeData = async function() {
+        return new Promise((resolve, reject) => {
+            const sqlquery = "SELECT * FROM films WHERE watchdate<?";
+
+
+            db.all(sqlquery, [data_per_film_precedenti], (err,rows) => {
+                if(err) reject("Errore Lettura WatchdateBefore");
+
+                resolve(rows);
+            });
+        });
+    };
+
+    //Lista FilmDB rating maggiore di x
+    this.waitFilmRatingBetterThen = async function() {
+        return new Promise((resolve, reject) => {
+            const sqlquery = "SELECT * FROM films WHERE rating>?";
+
+            db.all(sqlquery, [rating_film_migliori], (err,rows) => {
+                if(err) reject("Errore Lettura FilmRatingBetterThan");
+
+                resolve(rows);
+            });
+        });
+    };
+    
+    //Lista Film con titolo x
+    this.waitFilmWithTitle = async function() {
+        return new Promise((resolve, reject) => {
+            const sqlquery = "SELECT * FROM films WHERE title=?";
+
+
+            db.all(sqlquery, [titolo_da_stampare], (err,rows) => {
+                if(err) reject("Errore Lettura FilmWithTitle");
+
+                resolve(rows);
+            });
+        });
+    };
+
+
+    //Week02_02
+    //Store on DB
+    this.storeFilm = async function(film){
+        return new Promise((resolve, reject) => {
+            const sqlquery = "INSERT INTO films(id, title, favorite, watchdate, rating) values(?,?,?,?,?)";
+
+            db.run(sqlquery, [film.id, film.title, film.favorite, film.data.format('YYYY-MM-DD'), film.rating], (err) => {
+                if(err) reject("Errore Inserimento Film");
+
+                resolve("Inserimento riuscito");
+            });
+        });
+    };
+    //Delete Film with ID from DB
+    this.deleteFilmDBFromID = async function(film){
+        return new Promise((resolve, reject) => {
+            const sqlquery = "DELETE FROM films WHERE id=?";
+
+            db.run(sqlquery, [film.id], (err) =>{
+                if(err) reject("Errore Delete From ID");
+
+                resolve("Film con ID = "+ film.id +" rimosso dal DB");
+            });
+        });
+    };
+    //Delete watchdate dei film nel DB
+    this.deleteWatchdateFromDB = async function(){
+        return new Promise((resolve, reject) => {
+            const sqlquery = "UPDATE films SET watchdate=? WHERE watchdate<> ?";
+            
+            db.run(sqlquery, ["NULL", "NULL"], (err) =>{
+                if(err) reject("Errore Delete delle watchdate nel DB");
+
+                resolve("Watchdate nel DB cancellate");
+            });
+        });
+    };
+
 };
 
-/*
+
 async function main() {
-    await Promise.all([waitAllFilms(), waitFavoriteFilms(), waitWatchToday(), waitFilmBeforeData(), waitFilmRatingBetterThen(), waitFilmWithTitle()]);
-}
-*/
-async function main(){
-    await waitAllFilms();
-    await waitFavoriteFilms();
-    await waitWatchToday();
-    await waitFilmBeforeData();
-    await waitFilmRatingBetterThen();
-    await waitFilmWithTitle();
+    
+    // Creo Lista aggiungendo i vari film
+    const fl = new FilmLibrary();
+
+    let f1 = new Film(4, "Matrix", false, undefined, undefined);
+    fl.addFilm2List(f1);
+
+    f1 = new Film(5, "Shrek", false, dayjs('2022-03-21'), 3);
+    fl.addFilm2List(f1);
+
+    f1 = new Film(1, "Pulp Fiction", true, dayjs('2022-03-10'), 5);
+    fl.addFilm2List(f1);
+
+    f1 = new Film(2, "21 Grams", true, dayjs('2022-03-17'), 4);
+    fl.addFilm2List(f1);
+
+    f1 = new Film(3, "Star Wars", false, undefined, undefined);
+    fl.addFilm2List(f1);
+
+    //Confronto tra lista prima e dopo sort
+    /*
+
+    fl.PrintList();
+    fl.sortByDate();
+    //fl.sortId();
+    fl.PrintList();
+
+    //Delete a film con index
+    fl.deleteFilm('4');
+    fl.PrintList();
+
+    //Reset Watched Films
+    fl.resetWatchedFilms();
+    fl.PrintList();
+
+    //Funzione getratingd
+    fl.getratingd();
+
+    */
+    
+    const filmlibraryDB = new FilmLibrary();
+
+    //Operazioni con il DB
+    filmlibraryDB.PrintDBList(await filmlibraryDB.waitAllFilmsDB(), " Lista Film");
+    filmlibraryDB.PrintDBList(await filmlibraryDB.waitFavoriteFilms(), " Lista Film Preferiti");
+    filmlibraryDB.PrintDBList(await filmlibraryDB.waitWatchToday(), " Lista Film visti oggi");
+    filmlibraryDB.PrintDBList(await filmlibraryDB.waitFilmBeforeData(), " Lista Film Prima del "+ data_per_film_precedenti);
+    filmlibraryDB.PrintDBList(await filmlibraryDB.waitFilmRatingBetterThen(), " Lista Film con Rate maggiore di "+ rating_film_migliori);
+    filmlibraryDB.PrintDBList(await filmlibraryDB.waitFilmWithTitle(), " Dati Film con titolo = \""+ titolo_da_stampare +"\" ");
+
+    //Operazioni di insert e delete
+    //console.log(await filmlibraryDB.storeFilm(new Film(12, "Pulp Ficti", true, dayjs('2022-03-10'), 5)));
+    //console.log(await filmlibraryDB.deleteFilmDBFromID(new Film(9, "Pulp Ficti", true, dayjs('2022-03-10'), 5)));
+    //console.log(await filmlibraryDB.deleteWatchdateFromDB());
 
     return "Success";
 }
+
 main().then( (x) => { db.close(); console.log(x)} );
+
+//Week02_02
+
