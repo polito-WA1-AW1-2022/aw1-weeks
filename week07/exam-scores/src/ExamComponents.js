@@ -10,6 +10,7 @@ function ExamScores(props) {
 
 function ExamTable(props) {
   const [exams, setExams] = useState(props.exams);
+  const [showForm, setShowForm] = useState(false);
 
   function deleteExam(code) {
     // setExams(...)   // remove exam
@@ -17,6 +18,7 @@ function ExamTable(props) {
   }
 
   return (
+    <>
     <Table>
       <thead>
         <tr>
@@ -32,6 +34,9 @@ function ExamTable(props) {
         }
       </tbody>
     </Table>
+    { (!showForm) ? <Button onClick={()=>setShowForm(true)}>Add</Button> :
+    <ExamForm cancel={()=>setShowForm(false)} />}
+    </>
   );
 }
 
@@ -55,6 +60,20 @@ function ExamActions(props) {
   return <td><Button variant='danger'
     onClick={() => { props.deleteExam(props.code) }}
   ><i className='bi bi-trash3'></i></Button></td>
+}
+
+function ExamForm(props) {
+  const [name, setName] = useState('');
+
+  return (
+    <>
+    <form>
+    <input type="text" name="nome" className="form-control" value={name}
+     onChange={(event)=>{ setName(event.target.value.toUpperCase()) }}></input>
+    </form>
+    <Button onClick={props.cancel}>Cancel</Button>
+    </>
+  );
 }
 
 export { ExamScores };
