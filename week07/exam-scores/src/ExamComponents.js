@@ -1,14 +1,22 @@
-import {Table, Button} from 'react-bootstrap';
+import { Table, Button } from 'react-bootstrap';
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import { useState } from 'react';
 
 function ExamScores(props) {
-  return(
-      <ExamTable exams={props.exams}></ExamTable>
+  return (
+    <ExamTable exams={props.exams}></ExamTable>
   );
 }
 
 function ExamTable(props) {
-  return(
+  const [exams, setExams] = useState(props.exams);
+
+  function deleteExam(code) {
+    // setExams(...)   // remove exam
+    setExams( exams.filter( (e)=> e.code !== code ) );
+  }
+
+  return (
     <Table>
       <thead>
         <tr>
@@ -20,7 +28,7 @@ function ExamTable(props) {
       </thead>
       <tbody>
         {
-          props.exams.map((ex) => <ExamRow exam={ex} key={ex.code}/>)
+          exams.map((ex) => <ExamRow exam={ex} key={ex.code} deleteExam={deleteExam} />)
         }
       </tbody>
     </Table>
@@ -28,13 +36,13 @@ function ExamTable(props) {
 }
 
 function ExamRow(props) {
-  return(
-    <tr><ExamData exam={props.exam}/><ExamActions /></tr>
+  return (
+    <tr><ExamData exam={props.exam} /><ExamActions code={props.exam.code} deleteExam={props.deleteExam} /></tr>
   );
 }
 
 function ExamData(props) {
-  return(
+  return (
     <>
       <td>{props.exam.name}</td>
       <td>{props.exam.score}</td>
@@ -43,8 +51,10 @@ function ExamData(props) {
   );
 }
 
-function ExamActions() {
-  return <td><Button variant='danger'><i className='bi bi-trash3'></i></Button></td>
+function ExamActions(props) {
+  return <td><Button variant='danger'
+    onClick={() => { props.deleteExam(props.code) }}
+  ><i className='bi bi-trash3'></i></Button></td>
 }
 
-export {ExamScores};
+export { ExamScores };
