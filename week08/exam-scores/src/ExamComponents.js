@@ -19,8 +19,8 @@ function ExamTable(props) {
   }
 
   function addExam(exam) {
-    setExams( oldExams => [...oldExams, exam] );
-    setShowForm(false);
+    setExams(oldExams => [...oldExams, exam]);
+    //setShowForm(false);  // TEST: per provare a vedere la pagina che si ricarica con l'onSubmit del form se non c'e' il preventDefault() nell'onSubmit
   }
 
   return (
@@ -71,13 +71,13 @@ function ExamActions(props) {
 function ExamForm(props) {
   const [code, setCode] = useState('');
   const [name, setName] = useState('');
-  const [score, setScore] = useState(0);
+  const [score, setScore] = useState(18);
   const [date, setDate] = useState(dayjs());
 
   const [errorMsg, setErrorMsg] = useState('');  // stringa vuota '' = non c'e' errore
 
   const handleSubmit = (event) => {
-    event.preventDefault();
+    // event.preventDefault();   // TEST: per provare che la pagina si ricarica con onSubmit
     // validation
     if (score >= 18) {
       // add
@@ -106,8 +106,8 @@ function ExamForm(props) {
 
   return (
     <>
-      {errorMsg ? <Alert variant='danger' onClose={()=> setErrorMsg('')} dismissible>{errorMsg}</Alert> : false}
-      <Form>
+      {errorMsg ? <Alert variant='danger' onClose={() => setErrorMsg('')} dismissible>{errorMsg}</Alert> : false}
+      <Form onSubmit={handleSubmit}>
         <Form.Group>
           <Form.Label>Code</Form.Label>
           <Form.Control value={code} onChange={ev => setCode(ev.target.value)}></Form.Control>
@@ -124,9 +124,9 @@ function ExamForm(props) {
           <Form.Label>Date</Form.Label>
           <Form.Control type='date' value={date.format('YYYY-MM-DD')} onChange={ev => setDate(dayjs(ev.target.value))} />
         </Form.Group>
+        <Button type='submit' >Save</Button>
+        <Button onClick={props.cancel} variant='secondary' >Cancel</Button>
       </Form>
-    <Button onClick={handleSubmit}>Save</Button>
-    <Button onClick={props.cancel}>Cancel</Button>
     </>
   );
 }
