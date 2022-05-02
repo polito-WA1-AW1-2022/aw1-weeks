@@ -1,0 +1,12 @@
+App
+    h1
+    ExamScores
+        ExamTable     <--- state: list of exams
+            n*ExamRow
+                ExamData
+                    3*td
+                ExamActions
+                    1*Button
+            ExamForm      <--- local state: content of the fields of the form
+                               A callback from ExamTable (passed as props) will be called to change state
+
