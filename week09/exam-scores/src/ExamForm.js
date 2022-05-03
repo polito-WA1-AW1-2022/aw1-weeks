@@ -2,14 +2,18 @@ import { Button, Alert, Form } from 'react-bootstrap';
 import { Container, Row, Col } from 'react-bootstrap';
 import { useState } from 'react';
 import dayjs from 'dayjs';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 
 function ExamForm(props) {
-  const [code, setCode] = useState(props.examToEdit ? props.examToEdit.code : '');
-  const [name, setName] = useState(props.examToEdit ? props.examToEdit.name : '');
-  const [score, setScore] = useState(props.examToEdit ? props.examToEdit.score : 18);
-  const [date, setDate] = useState(props.examToEdit ? props.examToEdit.date : dayjs());
+  const { examId } = useParams();
+
+  const examToEdit = props.exams.find( (ex) => ex.code === examId );
+
+  const [code, setCode] = useState(examToEdit ? examToEdit.code : '');
+  const [name, setName] = useState(examToEdit ? examToEdit.name : '');
+  const [score, setScore] = useState(examToEdit ? examToEdit.score : 18);
+  const [date, setDate] = useState(examToEdit ? examToEdit.date : dayjs());
 
   const [errorMsg, setErrorMsg] = useState('');  // stringa vuota '' = non c'e' errore
 
@@ -53,7 +57,7 @@ function ExamForm(props) {
       <Container>
         <Row>
           <Col>
-            <h1>Form</h1>
+            <h1>Form  code: {examId}</h1>
           </Col>
         </Row>
         <Row>

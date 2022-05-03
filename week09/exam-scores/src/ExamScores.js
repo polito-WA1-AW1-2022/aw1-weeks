@@ -1,8 +1,8 @@
 import { Table, Button } from 'react-bootstrap';
 import { Container, Row, Col } from 'react-bootstrap';
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import { Link, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 
 function ExamScores(props) {
   return (
@@ -74,8 +74,10 @@ function ExamData(props) {
 }
 
 function ExamActions(props) {
+  const navigate = useNavigate();
+
   return (<td>
-    <Button className='mx-3' variant='warning' onClick={props.editExam} >
+    <Button className='mx-3' variant='warning' onClick={()=>{navigate(`/edit/${props.code}`)} } >
       <i className='bi bi-pencil'></i></Button>
     <Button variant='danger' onClick={() => { props.deleteExam(props.code) }}
     ><i className='bi bi-trash3'></i></Button>

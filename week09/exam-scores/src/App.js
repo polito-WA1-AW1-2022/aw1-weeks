@@ -37,6 +37,7 @@ function App() {
       <Routes>
         <Route path='/' element={<ExamScores exams={exams} deleteExam={deleteExam} />} />
         <Route path='/add' element={<ExamForm addExam={addExam} />} />
+        <Route path='/edit/:examId' element={<ExamForm addExam={updateExam} exams={exams} />} />
       </Routes>
     </Router>
     </>
