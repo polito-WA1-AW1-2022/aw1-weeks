@@ -1,38 +1,30 @@
 import { Table, Button } from 'react-bootstrap';
+import { Container, Row, Col } from 'react-bootstrap';
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import ExamForm from './ExamForm';
+import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 
 function ExamScores(props) {
   return (
-    <ExamTable exams={props.exams}></ExamTable>
+    <Container>
+      <Row>
+        <Col>
+          <h1>My Exams</h1>
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <ExamTable exams={props.exams} deleteExam={props.deleteExam}></ExamTable>
+        </Col>
+      </Row>
+    </Container>
   );
 }
 
 function ExamTable(props) {
-  const [exams, setExams] = useState(props.exams);
-  const [showForm, setShowForm] = useState(false);
-  const [examToEdit, setExamToEdit] = useState(undefined);
+  //const [examToEdit, setExamToEdit] = useState(undefined);
 
-  function deleteExam(code) {
-    // setExams(...)   // remove exam
-    setExams( exams.filter( (e)=> e.code !== code ) );
-  }
-
-  function addExam(exam) {
-    setExams( oldExams => [...oldExams, exam] );
-    setShowForm(false);
-    setExamToEdit(undefined);
-  }
-
-  function updateExam(exam) {
-    setExams(exams => exams.map(
-      e => (e.code === exam.code) ? Object.assign({}, exam) : e
-    ));
-    setShowForm(false);
-    setExamToEdit(undefined);
-  }
-
+  const navigate = useNavigate();
 
   return (
     <>
@@ -47,15 +39,19 @@ function ExamTable(props) {
       </thead>
       <tbody>
         {
-          exams.map((ex) => <ExamRow exam={ex} key={ex.code} deleteExam={deleteExam} 
-          editExam={()=>{setExamToEdit(ex); setShowForm(true);}} />)
+          props.exams.map((ex) => <ExamRow exam={ex} key={ex.code} deleteExam={props.deleteExam} 
+          editExam={()=>{/*setExamToEdit(ex); setShowForm(true);*/}} />)
         }
       </tbody>
     </Table>
-      {(!showForm) ? <Button onClick={() => setShowForm(true)}>Add</Button> :
+    {/* <Link to='/add'>Add</Link> */}
+    <Button onClick={ ()=> navigate('/add') } >Add</Button>
+
+
+      {/* (!showForm) ? <Button onClick={() => setShowForm(true)}>Add</Button> :
         <ExamForm key={examToEdit? examToEdit.code : 'nocode'} 
           cancel={() => { setShowForm(false); setExamToEdit(undefined); }}
-          addExam={examToEdit ? updateExam : addExam} examToEdit={examToEdit} />}
+      addExam={examToEdit ? updateExam : addExam} examToEdit={examToEdit} /> */}
     </>
   );
 }

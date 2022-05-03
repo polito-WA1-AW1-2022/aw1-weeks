@@ -1,6 +1,8 @@
-import {Button, Alert, Form} from 'react-bootstrap';
+import { Button, Alert, Form } from 'react-bootstrap';
+import { Container, Row, Col } from 'react-bootstrap';
 import { useState } from 'react';
 import dayjs from 'dayjs';
+import { useNavigate } from 'react-router-dom';
 
 
 function ExamForm(props) {
@@ -10,6 +12,8 @@ function ExamForm(props) {
   const [date, setDate] = useState(props.examToEdit ? props.examToEdit.date : dayjs());
 
   const [errorMsg, setErrorMsg] = useState('');  // stringa vuota '' = non c'e' errore
+
+  const navigate = useNavigate();
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -25,6 +29,7 @@ function ExamForm(props) {
       // add
       const newExam = { code: code.trim(), name: name.trim(), score: score, date: date }
       props.addExam(newExam);
+      navigate('/');
     }
   }
 
@@ -45,27 +50,38 @@ function ExamForm(props) {
 
   return (
     <>
-      {errorMsg ? <Alert variant='danger' onClose={()=> setErrorMsg('')} dismissible>{errorMsg}</Alert> : false}
-      <Form onSubmit={handleSubmit}>
-        <Form.Group>
-          <Form.Label>Code</Form.Label>
-          <Form.Control required={true} minLength={5} maxLength={7} value={code} onChange={ev => setCode(ev.target.value)}></Form.Control>
-        </Form.Group>
-        <Form.Group>
-          <Form.Label>Course name</Form.Label>
-          <Form.Control required={true} value={name} onChange={ev => setName(ev.target.value)}></Form.Control>
-        </Form.Group>
-        <Form.Group>
-          <Form.Label>Score</Form.Label>
-          <Form.Control type='number' min={18} max={31} value={score} onChange={ev => handleScore(ev)} />
-        </Form.Group>
-        <Form.Group>
-          <Form.Label>Date</Form.Label>
-          <Form.Control type='date' value={date.format('YYYY-MM-DD')} onChange={ev => setDate(dayjs(ev.target.value))} />
-        </Form.Group>
-        <Button type='submit' >Save</Button>
-        <Button onClick={props.cancel} variant='secondary' >Cancel</Button>
-      </Form>
+      <Container>
+        <Row>
+          <Col>
+            <h1>Form</h1>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            {errorMsg ? <Alert variant='danger' onClose={() => setErrorMsg('')} dismissible>{errorMsg}</Alert> : false}
+            <Form onSubmit={handleSubmit}>
+              <Form.Group>
+                <Form.Label>Code</Form.Label>
+                <Form.Control required={true} minLength={5} maxLength={7} value={code} onChange={ev => setCode(ev.target.value)}></Form.Control>
+              </Form.Group>
+              <Form.Group>
+                <Form.Label>Course name</Form.Label>
+                <Form.Control required={true} value={name} onChange={ev => setName(ev.target.value)}></Form.Control>
+              </Form.Group>
+              <Form.Group>
+                <Form.Label>Score</Form.Label>
+                <Form.Control type='number' min={18} max={31} value={score} onChange={ev => handleScore(ev)} />
+              </Form.Group>
+              <Form.Group>
+                <Form.Label>Date</Form.Label>
+                <Form.Control type='date' value={date.format('YYYY-MM-DD')} onChange={ev => setDate(dayjs(ev.target.value))} />
+              </Form.Group>
+              <Button type='submit' >Save</Button>
+              <Button onClick={ ()=> navigate('/')} variant='secondary' >Cancel</Button>
+            </Form>
+          </Col>
+        </Row>
+      </Container>
     </>
   );
 }
