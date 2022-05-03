@@ -22,7 +22,6 @@ function ExamScores(props) {
 }
 
 function ExamTable(props) {
-  //const [examToEdit, setExamToEdit] = useState(undefined);
 
   const navigate = useNavigate();
 
@@ -39,19 +38,12 @@ function ExamTable(props) {
       </thead>
       <tbody>
         {
-          props.exams.map((ex) => <ExamRow exam={ex} key={ex.code} deleteExam={props.deleteExam} 
-          editExam={()=>{/*setExamToEdit(ex); setShowForm(true);*/}} />)
+          props.exams.map((ex) => <ExamRow exam={ex} key={ex.code} deleteExam={props.deleteExam} />)
         }
       </tbody>
     </Table>
     {/* <Link to='/add'>Add</Link> */}
     <Button onClick={ ()=> navigate('/add') } >Add</Button>
-
-
-      {/* (!showForm) ? <Button onClick={() => setShowForm(true)}>Add</Button> :
-        <ExamForm key={examToEdit? examToEdit.code : 'nocode'} 
-          cancel={() => { setShowForm(false); setExamToEdit(undefined); }}
-      addExam={examToEdit ? updateExam : addExam} examToEdit={examToEdit} /> */}
     </>
   );
 }
@@ -59,7 +51,7 @@ function ExamTable(props) {
 function ExamRow(props) {
   return (
     <tr><ExamData exam={props.exam} />
-    <ExamActions code={props.exam.code} deleteExam={props.deleteExam} editExam={props.editExam} /></tr>
+    <ExamActions code={props.exam.code} deleteExam={props.deleteExam} /></tr>
   );
 }
 
