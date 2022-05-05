@@ -1,15 +1,13 @@
 "use strict";
 
-const ciao = (tizio) => {
-    console.log(`Ciao ${tizio}`);
+const ciao = () => {
+    console.log("ciao");
 }
 
-setTimeout(ciao, 1000, 'Enrico');
+setTimeout(ciao,2000); //2 secondi
 
-const id = setInterval(() => {console.log("Ciao");}, 2000) ;
-console.log(id);
-// «id» is a handle that refers to the timer
-//clearInterval(id) ;
+const id = setInterval (() => {console.log("Ciao in loop")}, 2000) //Interval: ogni 2 secondi riesegui il comando
 
-setTimeout(()=>{clearInterval(id)}, 5000);
+//clearInterval(id); interrompe l'interval
 
+setTimeout(()=>{clearInterval(id)},5000); //dopo 5 secondi smette di farlo
