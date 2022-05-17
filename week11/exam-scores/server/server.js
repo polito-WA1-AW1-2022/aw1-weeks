@@ -4,6 +4,7 @@ const express = require('express');
 const morgan = require('morgan'); // logging middleware
 const {check, validationResult} = require('express-validator'); // validation middleware
 const dao = require('./dao'); // module for accessing the DB
+const cors = require('cors');
 
 // init express
 const app = express();
@@ -12,6 +13,7 @@ const port = 3001;
 // set-up the middlewares
 app.use(morgan('dev'));
 app.use(express.json());
+app.use(cors());   // NB: Usare solo per sviluppo e per l'esame! Altrimenti indicare dominio
 
 
 /*** APIs ***/
