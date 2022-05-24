@@ -48,7 +48,7 @@ function App() {
   function deleteExam(code) {
     // setExams(...)   // remove exam
     //setExams( exams.filter( (e)=> e.code !== code ) );
-    setExams( exams.map( e => (e.code === code) ? {...e, status: 'deleted'} : e ))
+    setExams( exams => exams.map( e => (e.code === code) ? {...e, status: 'deleted'} : e ))
     API.deleteExam(code)
       .then( ()=> setDirty(true))
       .catch( err => handleError(err));

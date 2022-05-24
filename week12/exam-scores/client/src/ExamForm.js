@@ -66,10 +66,11 @@ function ExamForm(props) {
               <Form.Group>
                 <Form.Label>Course</Form.Label>
                 <Form.Control as="select" value={code} onChange={ev => setCode(ev.target.value)} disabled={examToEdit ? true : false}>
-                  <option disabled hidden value=''>choose...</option>
+                  {examToEdit ? <option>{examToEdit.name}</option> :
+                  <><option disabled hidden value=''>choose...</option>
                   {props.courses
                       .filter(c => !props.exams.find(e => e.code === c.code))  // Avoid exams that are already present
-                      .map(c => <option key={c.code} value={c.code} >{c.name} </option>)}
+                      .map(c => <option key={c.code} value={c.code} >{c.name} </option>)}</>}
                 </Form.Control>
               </Form.Group>
               <Form.Group>
