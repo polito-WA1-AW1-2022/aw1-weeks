@@ -11,7 +11,6 @@ function ExamForm(props) {
   const examToEdit = props.exams.find( (ex) => ex.code === examId );
 
   const [code, setCode] = useState(examToEdit ? examToEdit.code : '');
-  const [name, setName] = useState(examToEdit ? examToEdit.name : '');
   const [score, setScore] = useState(examToEdit ? examToEdit.score : 18);
   const [date, setDate] = useState(examToEdit ? examToEdit.date : dayjs());
 
@@ -23,15 +22,15 @@ function ExamForm(props) {
     event.preventDefault();
     // validation
     // esempio: che non ci siano spazi nel nome del corso
-    if (code.includes(' ')) {
-      setErrorMsg('Il codice del corso non deve contenere spazi');
-    } else if (name.trim().length === 0) {
-      setErrorMsg('Il nome del corso deve contenere dei caratteri che non siano solo spazi');
+    if ( !code) {
+      setErrorMsg('Selezionare un corso');
     } else if (date.isAfter(dayjs())) {
       setErrorMsg('La data non può essere futura');
     } else {
       // add
-      const newExam = { code: code.trim(), name: name.trim(), score: score, date: date }
+      //const newExam = { code: code.trim(), name: name.trim(), score: score, date: date }
+      const name = props.courses.find( c => c.code === code).name;
+      const newExam = { code: code, name: name, score: score, date: date}
       props.addExam(newExam);
       navigate('/');
     }
@@ -65,12 +64,13 @@ function ExamForm(props) {
             {errorMsg ? <Alert variant='danger' onClose={() => setErrorMsg('')} dismissible>{errorMsg}</Alert> : false}
             <Form onSubmit={handleSubmit}>
               <Form.Group>
-                <Form.Label>Code</Form.Label>
-                <Form.Control required={true} minLength={5} maxLength={7} value={code} onChange={ev => setCode(ev.target.value)}></Form.Control>
-              </Form.Group>
-              <Form.Group>
-                <Form.Label>Course name</Form.Label>
-                <Form.Control required={true} value={name} onChange={ev => setName(ev.target.value)}></Form.Control>
+                <Form.Label>Course</Form.Label>
+                <Form.Control as="select" value={code} onChange={ev => setCode(ev.target.value)} disabled={examToEdit ? true : false}>
+                  <option disabled hidden value=''>choose...</option>
+                  {props.courses
+                      .filter(c => !props.exams.find(e => e.code === c.code))  // Avoid exams that are already present
+                      .map(c => <option key={c.code} value={c.code} >{c.name} </option>)}
+                </Form.Control>
               </Form.Group>
               <Form.Group>
                 <Form.Label>Score</Form.Label>

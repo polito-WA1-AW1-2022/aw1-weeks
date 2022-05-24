@@ -17,28 +17,58 @@ const fakeExams = [
 
 function App() {
   const [exams, setExams] = useState([]);
+  const [courses, setCourses] = useState([]);
+  const [dirty, setDirty] = useState(true);
+  const [initialLoading, setInitialLoading] = useState(true);
+
+  useEffect(() => {
+    API.getAllCourses()
+      .then( (courses) => setCourses(courses) )
+      .catch( err => handleError(err))
+  }, [])
 
   useEffect(() => {
     // fetch  /api/exams
     // setExams del risultato
-    API.getAllExams()
-      .then((exams) => setExams(exams))
-      .catch( err => console.log(err))
-  }, [])
+    if (courses.length && dirty) {
+      API.getAllExams()
+        .then((exams) => {
+          setExams(exams);
+          setDirty(false);
+          setInitialLoading(false);
+        })
+        .catch(err => console.log(err))
+    }
+  }, [courses.length, dirty])
+
+  function handleError(err) {
+    console.log(err);
+  }
 
   function deleteExam(code) {
     // setExams(...)   // remove exam
-    setExams( exams.filter( (e)=> e.code !== code ) );
+    //setExams( exams.filter( (e)=> e.code !== code ) );
+    setExams( exams.map( e => (e.code === code) ? {...e, status: 'deleted'} : e ))
+    API.deleteExam(code)
+      .then( ()=> setDirty(true))
+      .catch( err => handleError(err));
   }
 
   function addExam(exam) {
+    exam.status = 'added';
     setExams( oldExams => [...oldExams, exam] );
+    API.addExam(exam)
+      .then( () => setDirty(true) )
+      .catch( err => handleError(err));
   }
 
   function updateExam(exam) {
     setExams(exams => exams.map(
-      e => (e.code === exam.code) ? Object.assign({}, exam) : e
+      e => (e.code === exam.code) ? Object.assign({}, exam, {status: 'updated'}) : e
     ));
+    API.updateExam(exam)
+      .then( () => setDirty(true) )
+      .catch( err => handleError(err) );
   }
 
 
@@ -46,9 +76,12 @@ function App() {
     <>
     <Router>
       <Routes>
-        <Route path='/' element={<ExamScores exams={exams} deleteExam={deleteExam} />} />
-        <Route path='/add' element={<ExamForm exams={exams} addExam={addExam} />} />
-        <Route path='/edit/:examId' element={<ExamForm addExam={updateExam} exams={exams} />} />
+        <Route path='/' element={
+            initialLoading ? <Loading /> :
+              <ExamScores exams={exams} deleteExam={deleteExam} />
+          } />
+        <Route path='/add' element={<ExamForm exams={exams} courses={courses} addExam={addExam} />} />
+        <Route path='/edit/:examId' element={<ExamForm addExam={updateExam} courses={courses}  exams={exams} />} />
       </Routes>
     </Router>
     </>
