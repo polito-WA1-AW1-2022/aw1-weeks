@@ -107,8 +107,8 @@ exports.createExam = (exam, userId) => {
 // update an existing exam
 exports.updateExam = (exam, userId) => {
   return new Promise((resolve, reject) => {
-    const sql = 'UPDATE exam SET date=DATE(?), score=?, userid=? WHERE coursecode = ?';
-    db.run(sql, [exam.date, exam.score, userId, exam.code], function (err) {  // <-- NB: function, NOT arrow function so this.lastID works
+    const sql = 'UPDATE exam SET date=DATE(?), score=? WHERE coursecode = ? AND userid = ?';
+    db.run(sql, [exam.date, exam.score, exam.code, userId], function (err) {  // <-- NB: function, NOT arrow function so this.lastID works
       if (err) {
         reject(err);
         return;
